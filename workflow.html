@@ -44,6 +44,36 @@
                 }).start(0);
         </pre>
 
+        <p>如果不用$.workflow，那么传统的方法是让人崩溃的，你还要小心的记得要callback。你可以一眼看出先后的顺序吗？是不是要从最后一行开始看？</p>
+
+        <pre>
+            (function(result) {
+                setTimeout(function() {
+                    result += 1;
+
+                    setTimeout(function() {
+                        result *= 10;
+
+                        // 同步
+                        (function(result) {
+                            result -= 5;
+
+                            setTimeout(function() {
+                                result += 10;
+
+                                // 同步
+                                (function(result) {
+                                    alert(result);
+                                })(result);
+
+                            }, 1);
+
+                        })(result);
+
+                    }, 100);
+                }, 2000); 
+            })(0);
+        </pre>
 
         <script src="js/jquery-1.4.2.min.js"></script>
         <script src="js/jquery.workflow.js"></script>
