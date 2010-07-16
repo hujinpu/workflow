@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>神奇的workflow</title>
+        <link type="text/css" rel="stylesheet" href="css/cssminireset.css" />
+        <link type="text/css" rel="stylesheet" href="css/workflow.css" />
+    </head>
+
+    <body>
+        <h2>使用 setTimeout 产生异步操作(本质和ajax没有区别)，并在工作流中加入同步操作。</h2>
+
+        <p>通过掉用workflow对象的start方法，result初始的值是0(start(0))，然后workflow的第一个操作是让result加1，所以result变为了1。然后会按照next的指示一步步的操作，而不会受到异步的影响。</p>
+
+        <p>这里注意，如果workflow中的某个操作是异步的，必须返回由$.generateOperation()方法返回的对象，而且在异步完成的时通知这个对象调用ok方法。而同步调用只要返回result就行了。</p>
+
+        <pre>
+                $.workflow(function(result) {
+                    var operation = $.generateOperation();
+                    setTimeout(function() {
+                        result += 1;
+                        operation.ok(result);
+                    }, 2000);
+                    return operation;
+                }).next(function(result) {
+                    var operation = $.generateOperation();
+                    setTimeout(function() {
+                        result *= 10; 
+                        operation.ok(result);
+                    }, 100);
+                    return operation;
+                }).next(function(result) {
+                    result -= 5;
+                    return result;
+                }).next(function(result) {
+                    var operation = $.generateOperation();
+                    setTimeout(function() {
+                        result += 10;
+                        operation.ok(result);
+                    }, 1);
+                    return operation;
+                }).next(function(result) {
+                    alert(result);
+                }).start(0);
+        </pre>
+
+
+        <script src="js/jquery-1.4.2.min.js"></script>
+        <script src="js/jquery.workflow.js"></script>
+        <script>
+            jQuery(function($) {
+                $.workflow(function(result) {
+                    var operation = $.generateOperation();
+                    setTimeout(function() {
+                        result += 1;
+                        operation.ok(result);
+                    }, 2000);
+                    return operation;
+                }).next(function(result) {
+                    var operation = $.generateOperation();
+                    setTimeout(function() {
+                        result *= 10; 
+                        operation.ok(result);
+                    }, 100);
+                    return operation;
+                }).next(function(result) {
+                    result -= 5;
+                    return result;
+                }).next(function(result) {
+                    var operation = $.generateOperation();
+                    setTimeout(function() {
+                        result += 10;
+                        operation.ok(result);
+                    }, 1);
+                    return operation;
+                }).next(function(result) {
+                    alert(result);
+                }).start(0);
+            });
+        </script>
+    </body>
+</html>
